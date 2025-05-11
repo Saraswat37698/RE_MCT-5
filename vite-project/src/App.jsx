@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import ShopifyLogo from "./assets/ShopifyLogo.png"
 import homepage1 from "./assets/homepage1.png"
 import beauty from "./assets/beauty.png"
@@ -23,6 +23,19 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import endpage from "./assets/endpage.png"
 
+function ProtectedRoute({ element }) {
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+  return isLoggedIn ? element : <LoginRedirect />;
+}
+
+function LoginRedirect() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    navigate("/login");
+  }, [navigate]);
+  return null;
+}
+
 function App()
 {
   const [email,setEmail]=useState("");
@@ -35,14 +48,14 @@ function App()
   return (
     <>
     <Router>
-      <Routes>
-        <Route path="/" element={<Homepage />} />
-        <Route path="/login" element={<Login Add={Add} email={email} password={password} setEmail={setEmail} setPassword={setPassword}/>} />
-        <Route path="/electronics" element={<EProducts />} />
-        <Route path="/jewelry" element={<JProducts />} />
-        <Route path="/description" element={<Description />} />
-        <Route path="/user" element={<User/>}/>
-      </Routes>
+     <Routes>
+  <Route path="/login" element={<Login Add={Add} email={email} password={password} setEmail={setEmail} setPassword={setPassword} />} />
+  <Route path="/" element={<ProtectedRoute element={<Homepage />} />} />
+  <Route path="/electronics" element={<ProtectedRoute element={<EProducts />} />} />
+  <Route path="/jewelry" element={<ProtectedRoute element={<JProducts />} />} />
+  <Route path="/description" element={<ProtectedRoute element={<Description />} />} />
+  <Route path="/user" element={<ProtectedRoute element={<User />} />} />
+</Routes>
     </Router>
     </>
   );
